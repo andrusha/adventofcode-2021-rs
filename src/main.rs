@@ -4,7 +4,6 @@ use crate::day_01::Day1SubCmd;
 use crate::day_02::Day2SubCmd;
 
 pub mod day_01;
-pub mod lib;
 pub mod day_02;
 
 #[derive(Parser)]

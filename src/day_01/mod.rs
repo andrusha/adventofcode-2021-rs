@@ -1,9 +1,12 @@
+use std::fs::File;
+use std::io::{self, BufRead};
 use std::ops::Range;
+use std::path::Path;
 use std::process;
+use std::str::FromStr;
 
 use clap::Parser;
-
-use crate::lib::read_num_lines;
+use thiserror::Error;
 
 #[derive(Parser)]
 pub struct Day1SubCmd {
@@ -15,7 +18,7 @@ pub struct Day1SubCmd {
 }
 
 pub fn main(args: Day1SubCmd) {
-    match read_num_lines(args.input_filename) {
+    match read_lines(args.input_filename) {
         Ok(numbers) => {
             let window_sums = window_map(numbers, args.window_width, args.window_offset, |w| w.iter().sum());
             for ws in window_sums.iter() {
@@ -25,7 +28,7 @@ pub fn main(args: Day1SubCmd) {
             println!("{} measurements that are larger than previous measurement", increases);
         }
         Err(e) => {
-            eprintln!("Error reading file: {}", e);
+            eprintln!("Error reading file: {:?}", e);
             process::exit(1);
         }
     }
@@ -101,4 +104,33 @@ fn window_map<A, B, F>(xs: Vec<A>, width: usize, offset: usize, f: F) -> Vec<B>
     ::for_vec(width, offset, xs.len())
         .map(|r| f(&slice[r]))
         .collect()
+}
+
+#[derive(Error, Debug)]
+enum InputError {
+    #[error(transparent)]
+    IOError(#[from] io::Error),
+
+    #[error(transparent)]
+    ParseIntError(#[from] std::num::ParseIntError),
+}
+
+
+fn read_lines<P>(filename: P) -> Result<Vec<i32>, InputError>
+    where P: AsRef<Path>, {
+    parse_lines(read_lines_buf(filename)?)
+}
+
+fn parse_lines<F>(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<F>, InputError>
+    where
+        F: FromStr,
+        InputError: From<<F as FromStr>::Err>, {
+    lines.map(|line| Ok(line?.parse()?)).collect()
+}
+
+fn read_lines_buf<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+    where P: AsRef<Path>, {
+    let file = File::open(filename)?;
+
+    Ok(io::BufReader::new(file).lines())
 }
