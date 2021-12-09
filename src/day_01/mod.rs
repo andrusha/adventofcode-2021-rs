@@ -115,7 +115,6 @@ enum InputError {
     ParseIntError(#[from] std::num::ParseIntError),
 }
 
-
 fn read_lines<P>(filename: P) -> Result<Vec<i32>, InputError>
     where P: AsRef<Path>, {
     parse_lines(read_lines_buf(filename)?)
