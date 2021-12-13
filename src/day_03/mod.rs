@@ -6,7 +6,6 @@ use bitvec::order::Msb0;
 use bitvec::prelude::BitVec;
 use clap::Parser;
 use thiserror::Error;
-use bitvec::prelude::*;
 
 #[derive(Parser)]
 pub struct Day3SubCmd {
