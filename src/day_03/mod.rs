@@ -12,34 +12,30 @@ pub struct Day3SubCmd {
     input_filename: String,
 }
 
-pub fn main(args: Day3SubCmd) {
-    match read_lines(args.input_filename.as_str()) {
-        Ok(bits) => {
-            let gamma: BitVec<Msb0> = bits.iter().map(|b| b.count_ones() > b.len() / 2).collect();
-            let epsilon: BitVec<Msb0> = !gamma.clone();
+pub fn main(args: Day3SubCmd) -> Result<(), InputError> {
+    let bits = read_lines(args.input_filename.as_str())?;
 
-            let gamma_v = gamma.load::<u32>();
-            let epsilon_v = epsilon.load::<u32>();
+    let gamma: BitVec<Msb0> = bits.iter().map(|b| b.count_ones() > b.len() / 2).collect();
+    let epsilon: BitVec<Msb0> = !gamma.clone();
 
-            println!("Gamma: {}, {}", gamma_v, gamma);
-            println!("Epsilon: {}, {}", epsilon_v, epsilon);
-            println!("Power consumption: {}", gamma_v * epsilon_v);
+    let gamma_v = gamma.load::<u32>();
+    let epsilon_v = epsilon.load::<u32>();
 
-            let oxygen_rating: BitVec<Msb0> = progressive_filter(&bits, true);
-            let oxygen_rating_v = oxygen_rating.load::<u32>();
+    println!("Gamma: {}, {}", gamma_v, gamma);
+    println!("Epsilon: {}, {}", epsilon_v, epsilon);
+    println!("Power consumption: {}", gamma_v * epsilon_v);
 
-            let co2_rating: BitVec<Msb0> = progressive_filter(&bits, false);
-            let co2_rating_v = co2_rating.load::<u32>();
+    let oxygen_rating: BitVec<Msb0> = progressive_filter(&bits, true);
+    let oxygen_rating_v = oxygen_rating.load::<u32>();
 
-            println!("Oxygen rating: {}, {}", oxygen_rating_v, oxygen_rating);
-            println!("CO2 rating: {}, {}", co2_rating_v, co2_rating);
-            println!("Support rating: {}", oxygen_rating_v * co2_rating_v);
-        }
-        Err(e) => {
-            eprintln!("Error reading file: {:?}", e);
-            std::process::exit(1);
-        }
-    }
+    let co2_rating: BitVec<Msb0> = progressive_filter(&bits, false);
+    let co2_rating_v = co2_rating.load::<u32>();
+
+    println!("Oxygen rating: {}, {}", oxygen_rating_v, oxygen_rating);
+    println!("CO2 rating: {}, {}", co2_rating_v, co2_rating);
+    println!("Support rating: {}", oxygen_rating_v * co2_rating_v);
+
+    Ok(())
 }
 
 fn progressive_filter(bits: &[BitVec<>], most_common: bool) -> BitVec<Msb0> {
@@ -68,7 +64,7 @@ fn progressive_filter(bits: &[BitVec<>], most_common: bool) -> BitVec<Msb0> {
 }
 
 #[derive(Error, Debug)]
-enum InputError {
+pub enum InputError {
     #[error(transparent)]
     IOError(#[from] io::Error),
 }

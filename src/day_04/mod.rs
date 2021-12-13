@@ -12,34 +12,29 @@ pub struct Day4SubCmd {
     input_filename: String,
 }
 
-pub fn main(args: Day4SubCmd) {
-    match read_lines(args.input_filename.as_str()) {
-        Ok((guesses, mut boards)) => {
-            println!("Guesses: {:?}", guesses);
-            for (i, b) in boards.iter().enumerate() {
-                println!("Board {}:\n{:?}", i, b);
+pub fn main(args: Day4SubCmd) -> Result<(), InputError> {
+    let (guesses, mut boards) = read_lines(args.input_filename.as_str())?;
+    println!("Guesses: {:?}", guesses);
+    for (i, b) in boards.iter().enumerate() {
+        println!("Board {}:\n{:?}", i, b);
+    }
+
+    let mut winning_boards: Vec<bool> = vec![false; boards.len()];
+
+    for guess in guesses.guesses {
+        for (i, b) in boards.iter_mut().enumerate() {
+            b.mark_number(guess);
+
+            if b.is_winning() && !winning_boards[i] {
+                winning_boards[i] = true;
+                println!("Winning board: {:?}", b);
+                let sum_unmarked = b.sum_unmarked();
+                println!("Sum unmarked: {}, Winning number: {}, Score: {}", sum_unmarked, guess, sum_unmarked * guess);
             }
-
-            let mut winning_boards: Vec<bool> = vec![false; boards.len()];
-
-            for guess in guesses.guesses {
-                for (i, b) in boards.iter_mut().enumerate() {
-                    b.mark_number(guess);
-
-                    if b.is_winning() && !winning_boards[i] {
-                        winning_boards[i] = true;
-                        println!("Winning board: {:?}", b);
-                        let sum_unmarked = b.sum_unmarked();
-                        println!("Sum unmarked: {}, Winning number: {}, Score: {}", sum_unmarked, guess, sum_unmarked * guess);
-                    }
-                }
-            }
-        }
-        Err(e) => {
-            eprintln!("Error reading file: {:?}", e);
-            std::process::exit(1);
         }
     }
+
+    Ok(())
 }
 
 #[derive(Default, Debug)]
@@ -92,7 +87,7 @@ impl BingoBoard {
 }
 
 #[derive(Error, Debug)]
-enum ParseBingoBoardError {
+pub enum ParseBingoBoardError {
     #[error("Unable to parse the number")]
     ParseIntError(#[from] std::num::ParseIntError),
 
@@ -103,19 +98,18 @@ enum ParseBingoBoardError {
     TooManyColumnsError,
 
     #[error("Too many rows to fit the board")]
-    TooManyRowsError
+    TooManyRowsError,
 }
 
 impl BingoBoard {
     fn from_lines(lines: &[&str]) -> Result<Self, ParseBingoBoardError> {
-        if lines.len() < BOARD_SIZE { return Err(ParseBingoBoardError::TooFewRowsError) }
-        else if lines.len() > BOARD_SIZE { return Err(ParseBingoBoardError::TooManyRowsError) }
+        if lines.len() < BOARD_SIZE { return Err(ParseBingoBoardError::TooFewRowsError); } else if lines.len() > BOARD_SIZE { return Err(ParseBingoBoardError::TooManyRowsError); }
 
         let mut board = BingoBoard::default();
 
         for (i, row) in lines.iter().enumerate() {
             for (j, col) in row.split_whitespace().enumerate() {
-                if j >= BOARD_SIZE { return Err(ParseBingoBoardError::TooManyColumnsError) }
+                if j >= BOARD_SIZE { return Err(ParseBingoBoardError::TooManyColumnsError); }
 
                 board.board[i][j] = col.parse()?;
             }
@@ -127,7 +121,7 @@ impl BingoBoard {
 
 #[derive(Debug)]
 struct Guesses {
-    guesses: Vec<usize>
+    guesses: Vec<usize>,
 }
 
 impl FromStr for Guesses {
@@ -144,7 +138,7 @@ impl FromStr for Guesses {
 }
 
 #[derive(Error, Debug)]
-enum InputError {
+pub enum InputError {
     #[error(transparent)]
     IOError(#[from] io::Error),
 
@@ -155,7 +149,7 @@ enum InputError {
     ParseIntError(#[from] std::num::ParseIntError),
 
     #[error("File is incorrectly     formatted")]
-    FileParsingError
+    FileParsingError,
 }
 
 fn read_lines(filename: &str) -> Result<(Guesses, Vec<BingoBoard>), InputError> {
@@ -164,7 +158,7 @@ fn read_lines(filename: &str) -> Result<(Guesses, Vec<BingoBoard>), InputError> 
     let lines: Vec<&str> = lines.lines().collect();
 
     if lines.len() < 2 {
-        return Err(InputError::FileParsingError)
+        return Err(InputError::FileParsingError);
     }
 
     let guesses: Guesses = lines[0].parse()?;

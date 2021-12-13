@@ -1,5 +1,5 @@
-use std::{io, process};
 use std::fs::File;
+use std::io;
 use std::io::BufRead;
 use std::path::Path;
 use std::str::FromStr;
@@ -12,17 +12,12 @@ pub struct Day2SubCmd {
     input_filename: String,
 }
 
-pub fn main(args: Day2SubCmd) {
-    match read_lines(args.input_filename) {
-        Ok(commands) => {
-            let pos = commands.iter().fold(Position::default(), |p, c| p.execute_command(c));
-            println!("Resulting position {:?}, multiply {}", pos, pos.horizontal * pos.depth);
-        }
-        Err(e) => {
-            eprintln!("Error reading file: {:?}", e);
-            process::exit(1);
-        }
-    }
+pub fn main(args: Day2SubCmd) -> Result<(), InputError> {
+    let commands = read_lines(args.input_filename)?;
+    let pos = commands.iter().fold(Position::default(), |p, c| p.execute_command(c));
+    println!("Resulting position {:?}, multiply {}", pos, pos.horizontal * pos.depth);
+
+    Ok(())
 }
 
 #[derive(Debug, Default)]
@@ -78,7 +73,7 @@ impl FromStr for Direction {
 }
 
 #[derive(Error, Debug)]
-enum ParseCommandError {
+pub enum ParseCommandError {
     #[error("Unable to parse the number")]
     ParseIntError(#[from] std::num::ParseIntError),
 
@@ -112,7 +107,7 @@ impl FromStr for Command {
 }
 
 #[derive(Error, Debug)]
-enum InputError {
+pub enum InputError {
     #[error(transparent)]
     IOError(#[from] io::Error),
     #[error(transparent)]

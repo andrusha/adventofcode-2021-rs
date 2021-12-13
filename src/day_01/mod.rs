@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::ops::Range;
 use std::path::Path;
-use std::process;
 use std::str::FromStr;
 
 use clap::Parser;
@@ -17,21 +16,16 @@ pub struct Day1SubCmd {
     window_offset: usize,
 }
 
-pub fn main(args: Day1SubCmd) {
-    match read_lines(args.input_filename) {
-        Ok(numbers) => {
-            let window_sums = window_map(numbers, args.window_width, args.window_offset, |w| w.iter().sum());
-            for ws in window_sums.iter() {
-                println!("{}", ws);
-            }
-            let increases = count_increases(window_sums);
-            println!("{} measurements that are larger than previous measurement", increases);
-        }
-        Err(e) => {
-            eprintln!("Error reading file: {:?}", e);
-            process::exit(1);
-        }
+pub fn main(args: Day1SubCmd) -> Result<(), InputError> {
+    let numbers = read_lines(args.input_filename)?;
+    let window_sums = window_map(numbers, args.window_width, args.window_offset, |w| w.iter().sum());
+    for ws in window_sums.iter() {
+        println!("{}", ws);
     }
+    let increases = count_increases(window_sums);
+    println!("{} measurements that are larger than previous measurement", increases);
+
+    Ok(())
 }
 
 struct IncCounter {
@@ -107,7 +101,7 @@ fn window_map<A, B, F>(xs: Vec<A>, width: usize, offset: usize, f: F) -> Vec<B>
 }
 
 #[derive(Error, Debug)]
-enum InputError {
+pub enum InputError {
     #[error(transparent)]
     IOError(#[from] io::Error),
 
