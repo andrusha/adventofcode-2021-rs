@@ -12,7 +12,7 @@ pub struct Day3SubCmd {
     input_filename: String,
 }
 
-pub fn main(args: Day3SubCmd) -> Result<(), InputError> {
+pub fn main(args: Day3SubCmd) -> Result<(), Day3Error> {
     let bits = read_lines(args.input_filename.as_str())?;
 
     let gamma: BitVec<Msb0> = bits.iter().map(|b| b.count_ones() > b.len() / 2).collect();
@@ -64,16 +64,16 @@ fn progressive_filter(bits: &[BitVec<>], most_common: bool) -> BitVec<Msb0> {
 }
 
 #[derive(Error, Debug)]
-pub enum InputError {
+pub enum Day3Error {
     #[error(transparent)]
     IOError(#[from] io::Error),
 }
 
-fn read_lines(filename: &str) -> Result<Vec<BitVec>, InputError> {
+fn read_lines(filename: &str) -> Result<Vec<BitVec>, Day3Error> {
     parse_lines(read_lines_buf(filename)?)
 }
 
-fn parse_lines(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<BitVec>, InputError> {
+fn parse_lines(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<BitVec>, Day3Error> {
     let mut res: Vec<BitVec> = vec![];
 
     for line in lines {

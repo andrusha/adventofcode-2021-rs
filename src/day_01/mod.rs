@@ -16,7 +16,7 @@ pub struct Day1SubCmd {
     window_offset: usize,
 }
 
-pub fn main(args: Day1SubCmd) -> Result<(), InputError> {
+pub fn main(args: Day1SubCmd) -> Result<(), Day1Error> {
     let numbers = read_lines(args.input_filename)?;
     let window_sums = window_map(numbers, args.window_width, args.window_offset, |w| w.iter().sum());
     for ws in window_sums.iter() {
@@ -101,7 +101,7 @@ fn window_map<A, B, F>(xs: Vec<A>, width: usize, offset: usize, f: F) -> Vec<B>
 }
 
 #[derive(Error, Debug)]
-pub enum InputError {
+pub enum Day1Error {
     #[error(transparent)]
     IOError(#[from] io::Error),
 
@@ -109,15 +109,15 @@ pub enum InputError {
     ParseIntError(#[from] std::num::ParseIntError),
 }
 
-fn read_lines<P>(filename: P) -> Result<Vec<i32>, InputError>
+fn read_lines<P>(filename: P) -> Result<Vec<i32>, Day1Error>
     where P: AsRef<Path>, {
     parse_lines(read_lines_buf(filename)?)
 }
 
-fn parse_lines<F>(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<F>, InputError>
+fn parse_lines<F>(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<F>, Day1Error>
     where
         F: FromStr,
-        InputError: From<<F as FromStr>::Err>, {
+        Day1Error: From<<F as FromStr>::Err>, {
     lines.map(|line| Ok(line?.parse()?)).collect()
 }
 

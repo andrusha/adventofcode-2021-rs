@@ -12,7 +12,7 @@ pub struct Day4SubCmd {
     input_filename: String,
 }
 
-pub fn main(args: Day4SubCmd) -> Result<(), InputError> {
+pub fn main(args: Day4SubCmd) -> Result<(), Day4Error> {
     let (guesses, mut boards) = read_lines(args.input_filename.as_str())?;
     println!("Guesses: {:?}", guesses);
     for (i, b) in boards.iter().enumerate() {
@@ -138,7 +138,7 @@ impl FromStr for Guesses {
 }
 
 #[derive(Error, Debug)]
-pub enum InputError {
+pub enum Day4Error {
     #[error(transparent)]
     IOError(#[from] io::Error),
 
@@ -152,13 +152,13 @@ pub enum InputError {
     FileParsingError,
 }
 
-fn read_lines(filename: &str) -> Result<(Guesses, Vec<BingoBoard>), InputError> {
+fn read_lines(filename: &str) -> Result<(Guesses, Vec<BingoBoard>), Day4Error> {
     let mut lines: String = String::new();
     File::open(filename)?.read_to_string(&mut lines)?;
     let lines: Vec<&str> = lines.lines().collect();
 
     if lines.len() < 2 {
-        return Err(InputError::FileParsingError);
+        return Err(Day4Error::FileParsingError);
     }
 
     let guesses: Guesses = lines[0].parse()?;

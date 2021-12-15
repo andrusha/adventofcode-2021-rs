@@ -12,7 +12,7 @@ pub struct Day2SubCmd {
     input_filename: String,
 }
 
-pub fn main(args: Day2SubCmd) -> Result<(), InputError> {
+pub fn main(args: Day2SubCmd) -> Result<(), Day2Error> {
     let commands = read_lines(args.input_filename)?;
     let pos = commands.iter().fold(Position::default(), |p, c| p.execute_command(c));
     println!("Resulting position {:?}, multiply {}", pos, pos.horizontal * pos.depth);
@@ -107,22 +107,22 @@ impl FromStr for Command {
 }
 
 #[derive(Error, Debug)]
-pub enum InputError {
+pub enum Day2Error {
     #[error(transparent)]
     IOError(#[from] io::Error),
     #[error(transparent)]
     ParseCommandError(#[from] ParseCommandError),
 }
 
-fn read_lines<P>(filename: P) -> Result<Vec<Command>, InputError>
+fn read_lines<P>(filename: P) -> Result<Vec<Command>, Day2Error>
     where P: AsRef<Path>, {
     parse_lines(read_lines_buf(filename)?)
 }
 
-fn parse_lines<F>(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<F>, InputError>
+fn parse_lines<F>(lines: io::Lines<io::BufReader<File>>) -> Result<Vec<F>, Day2Error>
     where
         F: FromStr,
-        InputError: From<<F as FromStr>::Err>, {
+        Day2Error: From<<F as FromStr>::Err>, {
     lines.map(|line| Ok(line?.parse()?)).collect()
 }
 
