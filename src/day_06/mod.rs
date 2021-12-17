@@ -6,6 +6,7 @@ use std::io::Read;
 use clap::Parser;
 use thiserror::Error;
 
+type Fish = i64;
 
 const FISH_BIRTH_DAYS: i64 = 8;
 const FISH_SPAWN_DAYS: i64 = 6;
@@ -28,13 +29,13 @@ pub fn main(args: Day6SubCmd) -> Result<(), Day6Error> {
     let mut genesis_fishes = String::new();
     File::open(args.input_filename)?.read_to_string(&mut genesis_fishes)?;
 
-    let genesis_fishes: Vec<i64> = genesis_fishes.split(',').map(|d| d.parse()).flatten().collect();
+    let genesis_fishes: Vec<Fish> = genesis_fishes.split(',').map(|d| d.parse()).flatten().collect();
     println!("Initial state: {:?}", genesis_fishes);
 
-    let mut memo: HashMap<(i64, i64), i64> = HashMap::new();
+    let mut memo = HashMap::new();
 
     for days in 1..=256 {
-        let mut total_spawn: i64 = genesis_fishes.len() as i64;
+        let mut total_spawn: Fish = genesis_fishes.len() as Fish;
         for &f in genesis_fishes.iter() {
             total_spawn += fishes_generation(f, days, &mut memo);
         }
@@ -45,9 +46,9 @@ pub fn main(args: Day6SubCmd) -> Result<(), Day6Error> {
     Ok(())
 }
 
-fn fishes_generation(age: i64, days_left: i64, memo: &mut HashMap<(i64, i64), i64>) -> i64 {
-    if age >= days_left { return 0 }
-    if let Some(&result) = memo.get(&(age, days_left)) { return result }
+fn fishes_generation(age: Fish, days_left: Fish, memo: &mut HashMap<(Fish, Fish), Fish>) -> Fish {
+    if age >= days_left { return 0; }
+    if let Some(&result) = memo.get(&(age, days_left)) { return result; }
 
     let lifetime = days_left - age - 1;
     let siblings = lifetime / (FISH_SPAWN_DAYS + 1);
@@ -71,23 +72,23 @@ mod tests {
     #[test]
     fn test_zero_days() {
         // no spawn
-        assert_eq!(fishes_generation(0, 0), 0);
-        assert_eq!(fishes_generation(1, 0), 0);
+        assert_eq!(fishes_generation(0, 0, &mut HashMap::new()), 0);
+        assert_eq!(fishes_generation(1, 0, &mut HashMap::new()), 0);
     }
 
     #[test]
     fn test_first_day() {
         // i: 1
         // 1: 0
-        assert_eq!(fishes_generation(1, 1), 0);
+        assert_eq!(fishes_generation(1, 1, &mut HashMap::new()), 0);
 
         // i: 2
         // 1: 1
-        assert_eq!(fishes_generation(2, 1), 0);
+        assert_eq!(fishes_generation(2, 1, &mut HashMap::new()), 0);
 
         // i: 0
         // 1: 6, 8
-        assert_eq!(fishes_generation(0, 1), 1);
+        assert_eq!(fishes_generation(0, 1, &mut HashMap::new()), 1);
     }
 
     #[test]
@@ -95,13 +96,13 @@ mod tests {
         // i: 1
         // 1: 0
         // 2: 6, 8
-        assert_eq!(fishes_generation(1, 2), 1);
+        assert_eq!(fishes_generation(1, 2, &mut HashMap::new()), 1);
 
         // i: 2
         // 1: 1
         // 2: 0
         // 3: 6, 8
-        assert_eq!(fishes_generation(2, 3), 1);
+        assert_eq!(fishes_generation(2, 3, &mut HashMap::new()), 1);
 
         // i: 3
         // 1: 2
@@ -109,7 +110,7 @@ mod tests {
         // 3: 0
         // 4: 6, 8
         // 5: 5, 7
-        assert_eq!(fishes_generation(3, 5), 1);
+        assert_eq!(fishes_generation(3, 5, &mut HashMap::new()), 1);
 
         // i: 6
         // 1: 5
@@ -120,7 +121,7 @@ mod tests {
         // 6: 0
         // 7: 6, 8
         // 8: 5, 7
-        assert_eq!(fishes_generation(6, 8), 1);
+        assert_eq!(fishes_generation(6, 8, &mut HashMap::new()), 1);
 
         // i: 8
         // 1: 7
@@ -132,7 +133,7 @@ mod tests {
         // 7: 1
         // 8: 0, 8
         // 9: 6, 7
-        assert_eq!(fishes_generation(8, 9), 1);
+        assert_eq!(fishes_generation(8, 9, &mut HashMap::new()), 1);
     }
 
     #[test]
@@ -147,7 +148,7 @@ mod tests {
         // 7: 0, 2
         // 8: 6, 1, 8
         // 9: 5, 0, 7
-        assert_eq!(fishes_generation(0, 9), 2);
+        assert_eq!(fishes_generation(0, 9, &mut HashMap::new()), 2);
 
         //  i: 3
         //  1: 2
@@ -168,7 +169,7 @@ mod tests {
         // 16: 1, 3, 3, 5
         // 17: 0, 2, 2, 4
         // 18: 6, 1, 1, 3, 8
-        assert_eq!(fishes_generation(3, 18), 4);
+        assert_eq!(fishes_generation(3, 18, &mut HashMap::new()), 4);
 
         //  i: 0
         //  1: 6, 8
@@ -181,7 +182,7 @@ mod tests {
         //  8: 6, 1, 8
         //  9: 5, 0, 7
         // 10: 4, 6, 6, 8
-        assert_eq!(fishes_generation(0, 10), 3);
+        assert_eq!(fishes_generation(0, 10, &mut HashMap::new()), 3);
     }
 
     #[test]
@@ -204,7 +205,7 @@ mod tests {
         // 15: 6, 1, 1, 3, 8
         // 16: 5, 0, 0, 2, 8
         // 17: 4, 6, 6, 1, 7, 8, 8
-        assert_eq!(fishes_generation(0, 17), 6);
+        assert_eq!(fishes_generation(0, 17, &mut HashMap::new()), 6);
     }
 
     #[test]
@@ -229,6 +230,6 @@ mod tests {
         // 17: 4, 6, 6, 1, 7, 8, 8
         // 18: 3, 5, 5, 0, 6, 7, 7
         // 19: 2, 4, 4, 6, 5, 6, 6, 8
-        assert_eq!(fishes_generation(0, 19), 7);
+        assert_eq!(fishes_generation(0, 19, &mut HashMap::new()), 7);
     }
 }
