@@ -14,6 +14,7 @@ pub struct Day5SubCmd {
     input_filename: String,
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum Day5Error {
     #[error(transparent)]

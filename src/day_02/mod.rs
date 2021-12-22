@@ -72,6 +72,7 @@ impl FromStr for Direction {
     }
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum ParseCommandError {
     #[error("Unable to parse the number")]

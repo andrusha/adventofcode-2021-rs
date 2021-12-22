@@ -86,6 +86,7 @@ impl BingoBoard {
     }
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum ParseBingoBoardError {
     #[error("Unable to parse the number")]
@@ -102,6 +103,7 @@ pub enum ParseBingoBoardError {
 }
 
 impl BingoBoard {
+    #[allow(clippy::comparison_chain)]
     fn from_lines(lines: &[&str]) -> Result<Self, ParseBingoBoardError> {
         if lines.len() < BOARD_SIZE { return Err(ParseBingoBoardError::TooFewRowsError); } else if lines.len() > BOARD_SIZE { return Err(ParseBingoBoardError::TooManyRowsError); }
 
@@ -137,6 +139,7 @@ impl FromStr for Guesses {
     }
 }
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum Day4Error {
     #[error(transparent)]

@@ -76,11 +76,11 @@ fn read_positions(filename: &str) -> Result<Vec<i32>, Day7Error> {
     Ok(res)
 }
 
-fn distance(xs: &Vec<i32>, e: i32) -> i32 {
+fn distance(xs: &[i32], e: i32) -> i32 {
     xs.iter().map(|&x| (e - x).abs()).sum()
 }
 
-fn factor_distance(xs: &Vec<i32>, e: i32) -> i32 {
+fn factor_distance(xs: &[i32], e: i32) -> i32 {
     xs.iter().map(|&x| (e - x).abs()).map(|d| d*(d+1)/2).sum()
 }
 
