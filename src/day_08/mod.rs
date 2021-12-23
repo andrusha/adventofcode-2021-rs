@@ -60,7 +60,6 @@ pub fn main(args: Day8SubCmd) -> Result<(), Day8Error> {
 #[derive(Debug)]
 struct Cypher {
     signals: Vec<Signal>,
-    mapping: Vec<usize>,
 }
 
 impl Cypher {
@@ -147,7 +146,7 @@ fn all_cyphers(permutations: Vec<Vec<usize>>) -> Vec<Cypher> {
             signal(&[0, 1, 2, 3, 4, 5, 6], &mapping), // 8
             signal(&[0, 1, 2, 3, 5, 6], &mapping),    // 9
         ];
-        cyphers.push(Cypher { signals, mapping });
+        cyphers.push(Cypher { signals });
     }
 
     cyphers

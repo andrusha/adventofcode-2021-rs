@@ -9,6 +9,7 @@ use crate::day_05::Day5SubCmd;
 use crate::day_06::Day6SubCmd;
 use crate::day_07::Day7SubCmd;
 use crate::day_08::Day8SubCmd;
+use crate::day_09::Day9SubCmd;
 
 mod day_01;
 mod day_02;
@@ -18,6 +19,7 @@ mod day_05;
 mod day_06;
 mod day_07;
 mod day_08;
+mod day_09;
 
 #[derive(Parser)]
 #[clap(version = "0.1", author = "Andrew Korzhuev <korzhuev@andrusha.me>")]
@@ -36,6 +38,7 @@ enum SubCommand {
     Day6(Day6SubCmd),
     Day7(Day7SubCmd),
     Day8(Day8SubCmd),
+    Day9(Day9SubCmd),
 }
 
 #[derive(Error, Debug)]
@@ -63,6 +66,9 @@ pub enum AdventError {
 
     #[error(transparent)]
     Day08Error(#[from] day_08::Day8Error),
+
+    #[error(transparent)]
+    Day09Error(#[from] day_09::Day9Error),
 }
 
 
@@ -78,6 +84,7 @@ fn main() -> Result<(), AdventError> {
         SubCommand::Day6(args) => day_06::main(args)?,
         SubCommand::Day7(args) => day_07::main(args)?,
         SubCommand::Day8(args) => day_08::main(args)?,
+        SubCommand::Day9(args) => day_09::main(args)?,
     }
 
     Ok(())
