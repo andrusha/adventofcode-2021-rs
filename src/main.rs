@@ -1,3 +1,5 @@
+#![feature(mixed_integer_ops)]
+
 use clap::Parser;
 use thiserror::Error;
 
@@ -10,7 +12,9 @@ use crate::day_06::Day6SubCmd;
 use crate::day_07::Day7SubCmd;
 use crate::day_08::Day8SubCmd;
 use crate::day_09::Day9SubCmd;
+use crate::day_10::Day10SubCmd;
 
+mod matrix;
 mod day_01;
 mod day_02;
 mod day_03;
@@ -20,6 +24,10 @@ mod day_06;
 mod day_07;
 mod day_08;
 mod day_09;
+mod day_10;
+mod day_11;
+mod day_12;
+mod day_13;
 
 #[derive(Parser)]
 #[clap(version = "0.1", author = "Andrew Korzhuev <korzhuev@andrusha.me>")]
@@ -39,6 +47,10 @@ enum SubCommand {
     Day7(Day7SubCmd),
     Day8(Day8SubCmd),
     Day9(Day9SubCmd),
+    Day10(Day10SubCmd),
+    Day11(day_11::SubCmd),
+    Day12(day_12::SubCmd),
+    Day13(day_13::SubCmd),
 }
 
 #[derive(Error, Debug)]
@@ -69,6 +81,18 @@ pub enum AdventError {
 
     #[error(transparent)]
     Day09Error(#[from] day_09::Day9Error),
+
+    #[error(transparent)]
+    Day10Error(#[from] day_10::Day10Error),
+
+    #[error(transparent)]
+    Day11Error(#[from] day_11::DayError),
+
+    #[error(transparent)]
+    Day12Error(#[from] day_12::DayError),
+
+    #[error(transparent)]
+    Day13Error(#[from] day_13::DayError),
 }
 
 
@@ -85,6 +109,10 @@ fn main() -> Result<(), AdventError> {
         SubCommand::Day7(args) => day_07::main(args)?,
         SubCommand::Day8(args) => day_08::main(args)?,
         SubCommand::Day9(args) => day_09::main(args)?,
+        SubCommand::Day10(args) => day_10::main(args)?,
+        SubCommand::Day11(args) => day_11::main(args)?,
+        SubCommand::Day12(args) => day_12::main(args)?,
+        SubCommand::Day13(args) => day_13::main(args)?,
     }
 
     Ok(())
