@@ -103,17 +103,17 @@ pub fn main(args: SubCmd) -> Result<(), DayError> {
     Ok(())
 }
 
-fn contains_a_tuple<T: PartialEq>(xs: &[T], t: (&T, &T)) -> bool {
-    if xs.len() < 2 { return false }
-
-    let mut first = &xs[0];
-    for second in &xs[1..] {
-        if t.0 == first && t.1 == second { return true }
-        first = second;
-    }
-
-    false
-}
+// fn contains_a_tuple<T: PartialEq>(xs: &[T], t: (&T, &T)) -> bool {
+//     if xs.len() < 2 { return false }
+//
+//     let mut first = &xs[0];
+//     for second in &xs[1..] {
+//         if t.0 == first && t.1 == second { return true }
+//         first = second;
+//     }
+//
+//     false
+// }
 
 fn read_vertices(filename: &str) -> Result<HashMap<Vertice, HashSet<Vertice>>, DayError> {
     let mut hm = HashMap::new();
