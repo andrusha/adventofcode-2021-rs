@@ -28,6 +28,7 @@ mod day_10;
 mod day_11;
 mod day_12;
 mod day_13;
+mod day_14;
 
 #[derive(Parser)]
 #[clap(version = "0.1", author = "Andrew Korzhuev <korzhuev@andrusha.me>")]
@@ -51,6 +52,7 @@ enum SubCommand {
     Day11(day_11::SubCmd),
     Day12(day_12::SubCmd),
     Day13(day_13::SubCmd),
+    Day14(day_14::SubCmd),
 }
 
 #[derive(Error, Debug)]
@@ -93,6 +95,9 @@ pub enum AdventError {
 
     #[error(transparent)]
     Day13Error(#[from] day_13::DayError),
+
+    #[error(transparent)]
+    Day14Error(#[from] day_14::DayError),
 }
 
 
@@ -113,6 +118,7 @@ fn main() -> Result<(), AdventError> {
         SubCommand::Day11(args) => day_11::main(args)?,
         SubCommand::Day12(args) => day_12::main(args)?,
         SubCommand::Day13(args) => day_13::main(args)?,
+        SubCommand::Day14(args) => day_14::main(args)?,
     }
 
     Ok(())
