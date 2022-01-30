@@ -13,7 +13,11 @@ pub struct Matrix<T, const N: usize, const M: usize> {
     m: [[T; M]; N],
 }
 
-#[derive(PartialEq, Eq, Hash, Debug, Clone)]
+pub struct If<const B: bool>;
+pub trait True { }
+impl True for If<true> { }
+
+#[derive(PartialEq, Eq, Hash, Debug, Clone, Copy)]
 pub struct Pos<const N: usize, const M: usize> {
     i: usize,
     j: usize,
@@ -36,6 +40,11 @@ impl<const N: usize, const M: usize> Pos<N, M> {
             (Some(i), Some(j)) if i < N && j < M => Some(Pos { i, j }),
             _ => None
         }
+    }
+
+    pub fn to<const NN: usize, const MM: usize>(&self) -> Pos<NN, MM>
+        where If<{N <= NN}>: True, If<{M <= MM}>: True {
+        Pos { i: self.i, j: self.j }
     }
 }
 
@@ -69,7 +78,7 @@ impl<'a, const N: usize, const M: usize, const D: usize> Iterator for DiffIterat
     }
 }
 
-struct IndexIterator<const N: usize, const M: usize> {
+pub struct IndexIterator<const N: usize, const M: usize> {
     i: usize,
     j: usize,
 }
@@ -100,7 +109,7 @@ impl<T: Copy, const N: usize, const M: usize> Matrix<T, N, M> {
         Matrix { m }
     }
 
-    fn index_iter(&self) -> IndexIterator<N, M> {
+    pub fn index_iter(&self) -> IndexIterator<N, M> {
         IndexIterator { i: 0, j: 0 }
     }
 
@@ -135,12 +144,12 @@ impl<T: Copy, const N: usize, const M: usize> Matrix<T, N, M> {
         m
     }
 
-    fn direct_neighbours<'a>(&self, pos: &'a Pos<N, M>) -> DiffIterator<'a, N, M, 4> {
+    pub fn direct_neighbours<'a>(&self, pos: &'a Pos<N, M>) -> DiffIterator<'a, N, M, 4> {
         let diffs = [
-            Diff { i: 0, j: -1 },
+            Diff { i: 1, j: 0 },
             Diff { i: 0, j: 1 },
             Diff { i: -1, j: 0 },
-            Diff { i: 1, j: 0 },
+            Diff { i: 0, j: -1 },
         ];
 
         DiffIterator { i: 0, start: pos, diffs }

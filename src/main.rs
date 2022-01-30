@@ -1,4 +1,6 @@
 #![feature(mixed_integer_ops)]
+#![allow(incomplete_features)]
+#![feature(generic_const_exprs)]
 
 use clap::Parser;
 use thiserror::Error;
@@ -29,6 +31,7 @@ mod day_11;
 mod day_12;
 mod day_13;
 mod day_14;
+mod day_15;
 
 #[derive(Parser)]
 #[clap(version = "0.1", author = "Andrew Korzhuev <korzhuev@andrusha.me>")]
@@ -53,6 +56,7 @@ enum SubCommand {
     Day12(day_12::SubCmd),
     Day13(day_13::SubCmd),
     Day14(day_14::SubCmd),
+    Day15(day_15::SubCmd),
 }
 
 #[derive(Error, Debug)]
@@ -98,6 +102,9 @@ pub enum AdventError {
 
     #[error(transparent)]
     Day14Error(#[from] day_14::DayError),
+
+    #[error(transparent)]
+    Day15Error(#[from] day_15::DayError),
 }
 
 
@@ -119,6 +126,7 @@ fn main() -> Result<(), AdventError> {
         SubCommand::Day12(args) => day_12::main(args)?,
         SubCommand::Day13(args) => day_13::main(args)?,
         SubCommand::Day14(args) => day_14::main(args)?,
+        SubCommand::Day15(args) => day_15::main(args)?,
     }
 
     Ok(())

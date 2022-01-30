@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt::{Display, Formatter};
 use clap::Parser;
 use thiserror::Error;
 
@@ -92,7 +91,7 @@ mod reader {
     use nom::bytes::complete::tag;
     use nom::character::complete::{alpha1, anychar, multispace1};
     use nom::combinator::map;
-    use nom::multi::{many1, separated_list1};
+    use nom::multi::separated_list1;
     use nom::sequence::{pair, separated_pair};
 
     use crate::day_14::{DayError, Insertion};
