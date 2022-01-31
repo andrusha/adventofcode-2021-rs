@@ -8,14 +8,10 @@ use std::str::FromStr;
 use bitvec::macros::internal::funty::IsNumber;
 use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Matrix<T, const N: usize, const M: usize> {
     m: [[T; M]; N],
 }
-
-pub struct If<const B: bool>;
-pub trait True { }
-impl True for If<true> { }
 
 #[derive(PartialEq, Eq, Hash, Debug, Clone, Copy)]
 pub struct Pos<const N: usize, const M: usize> {
@@ -40,11 +36,6 @@ impl<const N: usize, const M: usize> Pos<N, M> {
             (Some(i), Some(j)) if i < N && j < M => Some(Pos { i, j }),
             _ => None
         }
-    }
-
-    pub fn to<const NN: usize, const MM: usize>(&self) -> Pos<NN, MM>
-        where If<{N <= NN}>: True, If<{M <= MM}>: True {
-        Pos { i: self.i, j: self.j }
     }
 }
 
